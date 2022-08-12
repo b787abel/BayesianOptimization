@@ -41,13 +41,12 @@ class TargetSpace(object):
         # The function to be optimized
         self.target_func = target_func
 
-        # Get the name of the parameters
-        self._keys = sorted(pbounds)
         # Create an array with parameters bounds
-        self._bounds = np.array(
-            [item[1] for item in sorted(pbounds.items(), key=lambda x: x[0])],
-            dtype=float
-        )
+        self.pbounds = pbounds
+        lb = pbounds[0]
+        ub = pbounds[1]
+        self._bounds = np.transpose(np.array([lb, ub]))
+        
 
         # preallocated memory for X and Y points
         self._params = np.empty(shape=(0, self.dim))
@@ -77,11 +76,11 @@ class TargetSpace(object):
 
     @property
     def dim(self):
-        return len(self._keys)
+        return len(self.pbounds[0])
 
     @property
     def keys(self):
-        return self._keys
+        return np.arange(self.dim)+1
 
     @property
     def bounds(self):
@@ -186,12 +185,11 @@ class TargetSpace(object):
             target function value.
         """
         x = self._as_array(params)
-
         try:
             target = self._cache[_hashable(x)]
         except KeyError:
-            params = dict(zip(self._keys, x))
-            target = self.target_func(**params)
+            #params = dict(zip(self._keys, x))
+            target = self.target_func(x)
             self.register(x, target)
         return target
 

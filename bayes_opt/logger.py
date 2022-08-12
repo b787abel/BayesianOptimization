@@ -73,8 +73,8 @@ class ScreenLogger(_Tracker):
         cells = []
         cells.append(self._format_key("iter"))
         cells.append(self._format_key("target"))
-        for key in instance.space.keys:
-            cells.append(self._format_key(key))
+        for i in range(instance.space.dim):
+            cells.append(str(i+1)+"        ")
 
         line = "| " + " | ".join(cells) + " |"
         self._header_length = len(line)
